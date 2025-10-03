@@ -52,15 +52,13 @@ const renderContent = (text: string) => {
 
 export default function StreamingConsole() {
   const { client, setConfig } = useLiveAPIContext();
-  const { systemPrompt, voice, documentContext } = useSettings();
+  const { systemPrompt, voice } = useSettings();
   const turns = useLogStore(state => state.turns);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toggleSidebar } = useUI();
 
   // Set the configuration for the Live API
   useEffect(() => {
-    let effectiveSystemPrompt = systemPrompt;
-    
     // Using `any` for config to accommodate `speechConfig`, which is not in the
     // current TS definitions but is used in the working reference example.
     const config: any = {
@@ -74,17 +72,12 @@ export default function StreamingConsole() {
       },
       inputAudioTranscription: {},
       outputAudioTranscription: {},
+      tools: [{googleSearch: {}}],
+      systemInstruction: systemPrompt,
     };
 
-    if (documentContext) {
-      effectiveSystemPrompt = `${systemPrompt}\n\n---BẮT ĐẦU BỐI CẢNH TÀI LIỆU---\n${documentContext}\n---KẾT THÚC BỐI CẢNH TÀI LIỆU---\n\nQUAN TRỌNG: Các câu trả lời của bạn phải chỉ dựa trên thông tin được cung cấp trong bối cảnh tài liệu ở trên. Nếu không tìm thấy câu trả lời trong tài liệu, bạn phải nói rằng bạn không thể tìm thấy thông tin trong tài liệu được cung cấp. Không sử dụng bất kỳ kiến thức bên ngoài nào.`;
-    } else {
-      config.tools = [{googleSearch: {}}];
-    }
-    
-    config.systemInstruction = effectiveSystemPrompt;
     setConfig(config);
-  }, [setConfig, systemPrompt, voice, documentContext]);
+  }, [setConfig, systemPrompt, voice]);
 
   useEffect(() => {
     const { addTurn, updateLastTurn } = useLogStore.getState();

@@ -34,10 +34,8 @@ function ControlTray({ children }: ControlTrayProps) {
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
   const connectButtonRef = useRef<HTMLButtonElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { client, connected, connect, disconnect } = useLiveAPIContext();
-  const { documentContext, setDocumentContext } = useSettings();
 
 
   useEffect(() => {
@@ -82,47 +80,6 @@ function ControlTray({ children }: ControlTrayProps) {
     }
   };
 
-  const handleFileUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        setDocumentContext(text);
-        useLogStore.getState().addTurn({
-          role: 'system',
-          text: `Tệp đã được tải lên: ${file.name}. Trợ lý bây giờ sẽ trả lời các câu hỏi dựa trên tài liệu này.`,
-          isFinal: true,
-        });
-      };
-      reader.onerror = (e) => {
-        console.error("Lỗi đọc tệp:", e);
-        useLogStore.getState().addTurn({
-          role: 'system',
-          text: `Không thể đọc tệp: ${file.name}.`,
-          isFinal: true,
-        });
-      };
-      reader.readAsText(file);
-
-      // Reset the file input so the user can upload the same file again
-      event.target.value = '';
-    }
-  };
-  
-  const handleClearContext = () => {
-    setDocumentContext(null);
-    useLogStore.getState().addTurn({
-      role: 'system',
-      text: 'Bối cảnh tài liệu đã được xóa.',
-      isFinal: true,
-    });
-  };
-
   const handleExportLogs = () => {
     const { systemPrompt, model } = useSettings.getState();
     const { turns } = useLogStore.getState();
@@ -162,14 +119,6 @@ function ControlTray({ children }: ControlTrayProps) {
 
   return (
     <section className="control-tray">
-       <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept=".pdf,.docx,.txt"
-        style={{ display: 'none' }}
-        aria-hidden="true"
-      />
       <nav className={cn('actions-nav')}>
         <button
           className={cn('action-button mic-button')}
@@ -181,23 +130,6 @@ function ControlTray({ children }: ControlTrayProps) {
           ) : (
             <span className="material-symbols-outlined filled">mic_off</span>
           )}
-        </button>
-        <button
-          className={cn('action-button')}
-          onClick={handleFileUploadClick}
-          aria-label="Tải tệp lên"
-          title="Tải lên tài liệu"
-        >
-          <span className="icon">upload_file</span>
-        </button>
-        <button
-          className={cn('action-button')}
-          onClick={handleClearContext}
-          aria-label="Xóa Bối cảnh Tài liệu"
-          title="Xóa bối cảnh tài liệu"
-          disabled={!documentContext}
-        >
-          <span className="icon">delete_forever</span>
         </button>
         <button
           className={cn('action-button')}

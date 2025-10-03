@@ -35,11 +35,9 @@ export const useSettings = create<{
   systemPrompt: string;
   model: string;
   voice: string;
-  documentContext: string | null;
   setSystemPrompt: (prompt: string) => void;
   setModel: (model: string) => void;
   setVoice: (voice: string) => void;
-  setDocumentContext: (context: string | null) => void;
 }>(set => ({
   systemPrompt: `Bạn là một trợ lý AI hữu ích. Hãy trả lời các câu hỏi của người dùng một cách chính xác và ngắn gọn. Khi có thể, hãy sử dụng thông tin từ Google Search để trả lời.
 
@@ -229,11 +227,9 @@ YÊU CẦU:
 ĐỘ DÀI: 500-700 từ`,
   model: DEFAULT_LIVE_API_MODEL,
   voice: DEFAULT_VOICE,
-  documentContext: null,
   setSystemPrompt: prompt => set({ systemPrompt: prompt }),
   setModel: model => set({ model }),
   setVoice: voice => set({ voice }),
-  setDocumentContext: context => set({ documentContext: context }),
 }));
 
 /**
