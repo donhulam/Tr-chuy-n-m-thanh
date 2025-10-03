@@ -1,0 +1,7 @@
+{
+  "name": "Trò chuyện lời nói cùng AI - Ẩn cài đặt",
+  "description": "Ứng dụng được tạo bời Đỗ Như Lâm",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
